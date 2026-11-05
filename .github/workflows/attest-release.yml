@@ -20,26 +20,37 @@ jobs:
       id-token: write
       attestations: write
     env:
-      RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
-      RELEASE_DIR: ${{ runner.temp }}/simple-space-release
+      EVENT_RELEASE_TAG: ${{ github.event.release.tag_name }}
       GH_REPO: ${{ github.repository }}
     steps:
-      - name: Validate release tag
-        run: |
-          node -e 'if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(process.env.RELEASE_TAG)) throw new Error("版本标签必须为 x.y.z");'
-
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.RELEASE_TAG }}
+          ref: ${{ github.event.release.tag_name || github.sha }}
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: "22.12.0"
           cache: npm
 
-      - name: Validate manifest version
+      - name: Initialize release context
         run: |
-          node -e 'const fs=require("node:fs"); const m=JSON.parse(fs.readFileSync("manifest.json","utf8")); if (m.version!==process.env.RELEASE_TAG) throw new Error("manifest 版本与标签不一致");'
+          node --input-type=module <<'NODE'
+          import {readFileSync,appendFileSync} from 'node:fs';
+          import path from 'node:path';
+          const manifest=JSON.parse(readFileSync('manifest.json','utf8'));
+          const tag=process.env.EVENT_RELEASE_TAG||manifest.version;
+          if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(tag)||tag!==manifest.version) {
+            throw new Error('版本标签必须为 x.y.z，且与 manifest 一致');
+          }
+          const directory=path.join(process.env.RUNNER_TEMP,'simple-space-release');
+          appendFileSync(process.env.GITHUB_ENV,`RELEASE_TAG=${tag}\nRELEASE_DIR=${directory}\n`);
+          NODE
+
+      - name: Verify build inputs match the release tag
+        run: |
+          git rev-parse --verify "refs/tags/$RELEASE_TAG^{commit}"
+          git diff --exit-code "refs/tags/$RELEASE_TAG" HEAD -- src styles.css manifest.json package.json package-lock.json scripts/build.mjs
 
       - name: Install, test, and build from tagged source
         run: |

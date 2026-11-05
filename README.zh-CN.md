@@ -1,5 +1,7 @@
 # Simple Space · 简洁工作台
 
+[![Attest release assets](https://github.com/zc2638/obsidian-simple-space/actions/workflows/attest-release.yml/badge.svg)](https://github.com/zc2638/obsidian-simple-space/actions/workflows/attest-release.yml)
+
 [English](README.md)
 
 一个清晰、好看、顺手的 Obsidian 工作台。包含欢迎卡片、即时灵感、快捷入口、待办任务、最近笔记和统计卡片。无需 Home Pages、主题或外部 CSS 代码片段。

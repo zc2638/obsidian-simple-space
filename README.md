@@ -1,5 +1,7 @@
 # Simple Space
 
+[![Attest release assets](https://github.com/zc2638/obsidian-simple-space/actions/workflows/attest-release.yml/badge.svg)](https://github.com/zc2638/obsidian-simple-space/actions/workflows/attest-release.yml)
+
 A customizable workspace with quick capture, tasks, shortcuts, recent notes, and statistics. Arrange cards to keep everyday actions in one place, without a separate dashboard plugin or CSS snippet.
 
 [简体中文](README.zh-CN.md) · [Build and release guide / 构建与发布](release.md)
