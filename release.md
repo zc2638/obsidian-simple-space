@@ -4,7 +4,7 @@
 
 ```sh
 make deps           # 按 package-lock.json 安装依赖
-make check          # 测试、构建、语法检查
+make check          # UTC／上海两时区测试、构建、语法检查
 make package        # 生成 dist/simple-space-版本.zip
 make lint-workflows # 检查 Actions 语法及表达式上下文
 make release-check  # 检查版本、Git、登录状态并展示发布计划，不上传
@@ -22,9 +22,9 @@ make release        # 测试、构建、推送版本标签、正式发布 Releas
 
 ## 构建来源证明
 
-先将 `.github/workflows/attest-release.yml` 与代码一起提交并推送到默认分支。发布命令会先执行 actionlint，拦截 YAML 解析发现不了的表达式上下文错误。正式发布 Release（或将草稿点 Publish）后，GitHub Actions 自动检查对应版本标签、安装锁定依赖、测试并重新构建。下载的三个已发布附件必须与该次源码构建逐字节一致，随后才通过 `actions/attest@v4` 为它们生成来源证明；不会额外上传证明 JSON 到 Release 附件。
+先将 `.github/workflows/attest-release.yml` 与代码一起提交并推送到默认分支。发布命令会先执行 actionlint，拦截 YAML 解析发现不了的表达式上下文错误。正式发布 Release（或将草稿点 Publish）后，GitHub Actions 自动检查对应版本标签、安装锁定依赖，在 UTC／Asia/Shanghai 分别测试，再重新构建。安装、两种时区测试和构建分成独立步骤，失败时可直接定位。下载的三个已发布附件必须与该次源码构建逐字节一致，随后才通过 `actions/attest@v4` 为它们生成来源证明；不会额外上传证明 JSON 到 Release 附件。
 
-在仓库 Actions 中查看 **Attest release assets**。流程结束前，市场扫描可能仍提示缺少证明；运行时失败可查看对应步骤后重跑。若旧标签中的工作流本身无效，重跑旧任务仍会读取旧文件；先推送修复，再执行 `gh workflow run attest-release.yml --ref main`（默认分支为 main 时）。它从修复后的固定提交运行，以 manifest 的版本作为目标，自动核对构建输入与原标签一致，再重建并比对三个已发布附件。允许只改工作流和文档来补充现有版本的证明；运行代码或构建输入已变化时会拒绝，需另发新版本，不覆盖旧标签或附件。证明中的源提交为实际执行提交，构建输入与原标签的等同性由校验步骤保证。
+在仓库 Actions 中查看 **Attest release assets**。流程结束前，市场扫描可能仍提示缺少证明；运行时失败可查看对应步骤后重跑。若旧任务的工作流或测试本身需要修复，重跑旧任务仍会读取旧文件；先推送修复，再执行 `gh workflow run attest-release.yml --ref main`（默认分支为 main 时）。它从修复后的固定提交运行，以 manifest 的版本作为目标，自动核对构建输入与原标签一致，再重建并比对三个已发布附件。允许只改工作流、测试或文档来补充现有版本的证明；运行代码或构建输入已变化时会拒绝，需另发新版本，不覆盖旧标签或附件。证明中的源提交为实际执行提交，构建输入与原标签的等同性由校验步骤保证。
 
 验证命令需支持 attestations 的新版 GitHub CLI，例如 `gh attestation verify main.js -R 用户名/仓库名`。README 的 Actions 状态徽章链接到此工作流；旧任务失败状态会在新任务成功后更新，徽章本身不代表市场已通过审核。
 

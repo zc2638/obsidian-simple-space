@@ -41,6 +41,7 @@ async function setup(t, options = {}) {
  const draftRoot = root + '-device'; fs.mkdirSync(draftRoot, {recursive: true}); roots.add(draftRoot);
  const legacyPath = options.config?.notePath || '收件箱/灵感.md';
  const config = options.defaults ? {...options.config} : {saveMode: 'single', noteFolder: path.posix.dirname(legacyPath), splitBySize: false, notePath: legacyPath, attachmentFolder: '收件箱/附件/灵感', ...options.config};
+ // 本地日期分桶使用无固定偏移的时钟样例，确保各时区都真正跨越月、季、年边界。
  let clock = options.now === undefined ? null : new Date(options.now).getTime();
  class ClockDate extends Date {constructor(...args) {super(...(args.length ? args : clock === null ? [] : [clock]));} static now() {return clock === null ? Date.now() : clock;}}
  const busyGuards = [];
@@ -543,7 +544,7 @@ function writeNote(root, filePath, text) {fs.mkdirSync(path.dirname(path.join(ro
 const captureRows = h => h.visible().filter(el => el.tagName === 'BUTTON' && el.getAttribute('aria-label')?.startsWith('打开灵感：'));
 
 test('默认单文件保存且只在点击保存后创建统一根与附件目录', async t => {
- const h = await setup(t, {defaults: true, now: '2026-11-04T10:00:00+08:00'});
+ const h = await setup(t, {defaults: true, now: '2026-11-04T10:00:00'});
  assert.equal(h.definition.defaultConfig().saveMode, 'single');
  assert.equal(h.definition.defaultConfig().noteFolder, 'Simple Space/即时灵感');
  assert.equal(fs.readdirSync(h.root).length, 0);
@@ -556,14 +557,14 @@ test('默认单文件保存且只在点击保存后创建统一根与附件目�
 
 test('五种保存方式按本地日期分桶，季度边界和跨年正确，单文件使用根下旧文件名', async t => {
  const cases = [
-  ['year', '2027-01-01T12:00:00+08:00', '2027.md'],
-  ['quarter', '2026-03-31T12:00:00+08:00', '2026-Q1.md'],
-  ['quarter', '2026-04-01T12:00:00+08:00', '2026-Q2.md'],
-  ['quarter', '2026-12-31T12:00:00+08:00', '2026-Q4.md'],
-  ['quarter', '2027-01-01T12:00:00+08:00', '2027-Q1.md'],
-  ['month', '2026-12-31T12:00:00+08:00', '2026-12.md'],
-  ['day', '2027-01-01T12:00:00+08:00', '2027-01-01.md'],
-  ['single', '2027-01-01T12:00:00+08:00', '旧手记.MD']
+  ['year', '2027-01-01T12:00:00', '2027.md'],
+  ['quarter', '2026-03-31T12:00:00', '2026-Q1.md'],
+  ['quarter', '2026-04-01T12:00:00', '2026-Q2.md'],
+  ['quarter', '2026-12-31T12:00:00', '2026-Q4.md'],
+  ['quarter', '2027-01-01T12:00:00', '2027-Q1.md'],
+  ['month', '2026-12-31T12:00:00', '2026-12.md'],
+  ['day', '2027-01-01T12:00:00', '2027-01-01.md'],
+  ['single', '2027-01-01T12:00:00', '旧手记.MD']
  ];
  for (const [saveMode, now, filename] of cases) {
   const h = await setup(t, {now, config: {saveMode, noteFolder: '新根', notePath: '旧根/旧手记.MD'}});
@@ -588,7 +589,7 @@ test('最近五条跨时间分卷及历史来源排序，点击定位真实文�
 });
 
 test('按UTF8 Markdown大小自动续卷，附件各归对应笔记且超大单条不拆散', async t => {
- const h = await setup(t, {now: '2026-11-04T10:00:00+08:00', config: {saveMode: 'month', noteFolder: '归档', splitBySize: true, maxFileSizeKB: 1}});
+ const h = await setup(t, {now: '2026-11-04T10:00:00', config: {saveMode: 'month', noteFolder: '归档', splitBySize: true, maxFileSizeKB: 1}});
  const linkSources = [], generate = h.app.fileManager.generateMarkdownLink;
  h.app.fileManager.generateMarkdownLink = (file, source, ...args) => {linkSources.push(source); return generate(file, source, ...args);};
  for (const label of ['第一条', '第二条']) {
@@ -607,9 +608,9 @@ test('按UTF8 Markdown大小自动续卷，附件各归对应笔记且超大单�
 
 test('跨月首attempt失败后锁定原月份和时间，崩溃恢复重试仍写同一分卷', async t => {
  const config = {saveMode: 'month', noteFolder: '分月', splitBySize: true, maxFileSizeKB: 1};
- const h = await setup(t, {now: '2026-10-31T23:59:00+08:00', config, failProcess: 1});
+ const h = await setup(t, {now: '2026-10-31T23:59:00', config, failProcess: 1});
  h.input.value = '十月首尝试'; await h.input.oninput(); await h.save.click(); assert.equal(h.input.value, '十月首尝试'); h.crash();
- const restored = await setup(t, {root: h.root, now: '2026-11-01T00:01:00+08:00', config});
+ const restored = await setup(t, {root: h.root, now: '2026-11-01T00:01:00', config});
  assert.equal(restored.input.value, '十月首尝试'); await restored.save.click();
  const saved = fs.readFileSync(path.join(h.root, '分月/2026-10.md'), 'utf8'); assert.match(saved, /十月首尝试/); assert.match(saved, /2026\/10\/31/);
  assert.equal(fs.existsSync(path.join(h.root, '分月/2026-11.md')), false);
@@ -617,11 +618,11 @@ test('跨月首attempt失败后锁定原月份和时间，崩溃恢复重试仍�
 
 test('process实际追加后抛错，原卡重试及改根重启都不重复入库', async t => {
  const config = {saveMode: 'month', noteFolder: '已写入', splitBySize: true, maxFileSizeKB: 1};
- const h = await setup(t, {now: '2026-11-04T10:00:00+08:00', config, failCleanup: true});
+ const h = await setup(t, {now: '2026-11-04T10:00:00', config, failCleanup: true});
  let first = true; const original = h.app.vault.process.bind(h.app.vault);
  h.app.vault.process = async (...args) => {await original(...args); if(first) {first = false; throw new Error('写入完成后模拟中断');}};
  h.input.value = '提交成功但回调失败'; await h.input.oninput(); await h.save.click(); assert.equal(h.input.value, '提交成功但回调失败');
- h.setNow('2026-12-01T00:00:00+08:00'); await h.save.click(); assert.equal(h.input.value, ''); h.crash();
+ h.setNow('2026-12-01T00:00:00'); await h.save.click(); assert.equal(h.input.value, ''); h.crash();
  const restored = await setup(t, {root: h.root, config: {...config, noteFolder: '另一个根'}}); assert.equal(restored.input.value, '');
  const text = fs.readFileSync(path.join(h.root, '已写入/2026-11.md'), 'utf8'); assert.equal((text.match(/提交成功但回调失败/g) || []).length, 1);
  assert.equal(fs.existsSync(path.join(h.root, '已写入/2026-12.md')), false);
@@ -659,13 +660,13 @@ test('实际追加后报错并继续编辑，异常重启恢复新增文字和�
 
 test('实际追加后只变更附件也生成新版本，跨月保存保留旧附件链接', async t => {
  const config = {saveMode: 'month', noteFolder: '版本附件'};
- const h = await setup(t, {now: '2026-10-31T23:59:00+08:00', config});
+ const h = await setup(t, {now: '2026-10-31T23:59:00', config});
  let first = true; const original = h.app.vault.process.bind(h.app.vault);
  h.app.vault.process = async (...args) => {await original(...args); if(first) {first = false; throw new Error('实际追加后报错');}};
  h.input.value = '附件版本'; await h.add([new File(['original-bytes'], '原附件.txt')]); await h.save.click();
  const oldPath = '版本附件/2026-10.md', oldNote = fs.readFileSync(path.join(h.root, oldPath), 'utf8');
  const oldAttachment = oldNote.match(/\[\[([^|\]]+)\|/)[1];
- h.setNow('2026-11-01T00:01:00+08:00'); await h.add([new File(['new-bytes'], '新附件.txt')]); await h.save.click();
+ h.setNow('2026-11-01T00:01:00'); await h.add([new File(['new-bytes'], '新附件.txt')]); await h.save.click();
  assert.equal(fs.readFileSync(path.join(h.root, oldAttachment), 'utf8'), 'original-bytes');
  assert.equal(fs.readFileSync(path.join(h.root, oldPath), 'utf8'), oldNote);
  const next = fs.readFileSync(path.join(h.root, '版本附件/2026-11.md'), 'utf8');
@@ -770,7 +771,7 @@ test('合并提交后仅来源目录清理失败时，保留主快照防止已�
 });
 
 test('并发追加在process内再次检查大小，重新选卷时已写附件迁到新卷目录', async t => {
- const h = await setup(t, {now: '2026-11-04T10:00:00+08:00', config: {saveMode: 'month', noteFolder: '竞争', splitBySize: true, maxFileSizeKB: 1}});
+ const h = await setup(t, {now: '2026-11-04T10:00:00', config: {saveMode: 'month', noteFolder: '竞争', splitBySize: true, maxFileSizeKB: 1}});
  const original = h.app.vault.process.bind(h.app.vault); let raced = false;
  h.app.vault.process = async (file, update) => {
   if(!raced) {raced = true; fs.appendFileSync(path.join(h.root, file.path), '\n## 2026/11/4 09:00:00\n\n并发写入' + '先'.repeat(220) + '\n');}
@@ -786,7 +787,7 @@ test('并发追加在process内再次检查大小，重新选卷时已写附件�
 });
 
 test('两张卡片并发保存同月份，process原子复核保留所有记录并自动续卷', async t => {
- const config = {saveMode: 'month', noteFolder: '双卡', splitBySize: true, maxFileSizeKB: 1}, now = '2026-11-04T10:00:00+08:00';
+ const config = {saveMode: 'month', noteFolder: '双卡', splitBySize: true, maxFileSizeKB: 1}, now = '2026-11-04T10:00:00';
  const first = await setup(t, {now, config, widgetId: 'parallel-a'});
  const second = await setup(t, {now, config, root: first.root, app: first.app, widgetId: 'parallel-b'});
  first.input.value = '卡片甲' + '甲'.repeat(180); second.input.value = '卡片乙' + '乙'.repeat(180);
@@ -801,11 +802,11 @@ test('两张卡片并发保存同月份，process原子复核保留所有记录�
 
 test('实际追加后立即崩溃，恢复按快照原目标查重，改保存根也不恢复已提交文字', async t => {
  const config = {saveMode: 'month', noteFolder: '原目标', splitBySize: true, maxFileSizeKB: 1};
- const h = await setup(t, {now: '2026-11-04T10:00:00+08:00', config});
+ const h = await setup(t, {now: '2026-11-04T10:00:00', config});
  const process = h.app.vault.process.bind(h.app.vault);
  h.app.vault.process = async (...args) => {await process(...args); throw new Error('提交后未返回');};
  h.input.value = '崩溃后不能重复'; await h.input.oninput(); await h.save.click(); h.crash();
- const restored = await setup(t, {root: h.root, config: {...config, noteFolder: '新目标'}, now: '2026-12-01T10:00:00+08:00'});
+ const restored = await setup(t, {root: h.root, config: {...config, noteFolder: '新目标'}, now: '2026-12-01T10:00:00'});
  assert.equal(restored.input.value, '');
  assert.equal((fs.readFileSync(path.join(h.root, '原目标/2026-11.md'), 'utf8').match(/崩溃后不能重复/g) || []).length, 1);
  assert.equal(fs.existsSync(path.join(h.root, '新目标')), false);

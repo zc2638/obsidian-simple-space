@@ -1,11 +1,12 @@
 .DEFAULT_GOAL := help
 ACTIONLINT ?= actionlint
-.PHONY: help deps build test check package lint-workflows release-check release-draft release
+.PHONY: help deps build test test-timezones check package lint-workflows release-check release-draft release
 
 help:
 	@echo "make deps           安装固定版本的开发依赖"
 	@echo "make build          构建 main.js"
 	@echo "make test           运行测试"
+	@echo "make test-timezones 在 UTC 和上海时区分别运行测试"
 	@echo "make check          运行测试、构建和语法检查"
 	@echo "make package        生成本地安装 ZIP"
 	@echo "make lint-workflows 检查 Actions 语法和表达式上下文（需 actionlint）"
@@ -22,7 +23,11 @@ build:
 test:
 	npm test
 
-check: test build
+test-timezones:
+	env TZ=UTC npm test
+	env TZ=Asia/Shanghai npm test
+
+check: test-timezones build
 	node --check main.js
 
 package:
