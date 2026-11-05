@@ -5,7 +5,7 @@ execFileSync(process.execPath,['scripts/build.mjs'],{stdio:'inherit'});
 const manifest=JSON.parse(await readFile('manifest.json','utf8'));
 const folder=path.resolve('dist',manifest.id);
 await mkdir(folder,{recursive:true});
-for(const name of ['main.js','manifest.json','styles.css','README.md','LICENSE','THIRD-PARTY-NOTICES.md'])await copyFile(name,path.join(folder,name));
+for(const name of ['main.js','manifest.json','styles.css','README.md','release.md','LICENSE','THIRD-PARTY-NOTICES.md'])await copyFile(name,path.join(folder,name));
 const zip=path.resolve('dist',`${manifest.id}-${manifest.version}.zip`);await rm(zip,{force:true});
 execFileSync('zip',['-qr',zip,manifest.id],{cwd:path.dirname(folder)});
 console.log(`插件安装包：${zip}`);

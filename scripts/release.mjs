@@ -36,7 +36,10 @@ try{
  requireValue(remoteCommit===commit,`当前 ${branch} 分支尚未完整推送，请先 git push -u origin ${branch}。`);
  const tagCommit=remoteTag(version);
  requireValue(!tagCommit||tagCommit===commit,`远端标签 ${version} 已指向其他提交，请递增版本，不覆盖旧标签。`);
- try{run('gh',['auth','status','--active','--hostname','github.com'],{stdio:'ignore'});}catch{throw new Error('GitHub CLI 不可用或未登录，请安装 gh 并执行 gh auth login。');}
+ try{run('gh',['auth','status','--hostname','github.com']);}catch(error){
+  if(error.code==='ENOENT')throw new Error('未找到 GitHub CLI，请安装 gh 并确认它位于 PATH 中。');
+  throw new Error(`GitHub 登录检查失败（退出码 ${error.status??'未知'}），请执行 gh auth status --hostname github.com 查看具体原因。`);
+ }
  const assets=['main.js','manifest.json','styles.css'].map(file=>path.resolve('dist',id,file));
  assets.push(path.resolve('dist',`${id}-${version}.zip`));
  console.log(`目标：${repository}\n版本／标签：${version}\n提交：${commit}\n模式：${args.includes('--draft')?'Release 草稿':'正式 Release'}\n附件：\n${assets.map(file=>'  '+file).join('\n')}`);
@@ -50,7 +53,9 @@ try{
   // 耗时测试后再次确认发布内容，防止中途改动源码或切换提交。
   clean();requireValue(run('git',['rev-parse','HEAD'])===commit,'验证期间 HEAD 已改变，请重新发布。');
   if(!tagCommit)run('git',['push','origin',`${commit}:refs/tags/${version}`],{stdio:'inherit'});
-  const releaseArgs=['release','create',version,...assets,'--repo',repository,'--verify-tag','--title',`${name} ${version}`,'--generate-notes'];
+  // 直接校验远端标签并固定目标提交，兼容尚无 --verify-tag 的旧版 gh。
+  requireValue(remoteTag(version)===commit,'发布前远端标签校验失败，请检查标签是否仍指向当前提交。');
+  const releaseArgs=['release','create',version,...assets,'--repo',repository,'--target',commit,'--title',`${name} ${version}`,'--generate-notes'];
   if(args.includes('--draft'))releaseArgs.push('--draft');
   run('gh',releaseArgs,{stdio:'inherit'});
   console.log(args.includes('--draft')?'Release 草稿已创建，确认内容后可在 GitHub 发布。':'GitHub Release 已发布。');
