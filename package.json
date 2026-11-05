@@ -1,0 +1,19 @@
+{
+  "name": "simple-space",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "一个清晰、好看、顺手的 Obsidian 工作台。",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "test": "node --test tests/*.test.js tests/*.test.cjs",
+    "package": "node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.7",
+    "happy-dom": "^21.0.4",
+    "obsidian": "^1.14.4"
+  }
+}

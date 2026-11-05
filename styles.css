@@ -1,0 +1,300 @@
+/* Simple Space：保留原有卡片风格，选择器限定在本插件视图和抽屉中。 */
+.desk-view { --hp-border:var(--background-modifier-border);--hp-card-bg:var(--background-primary);--hp-muted:var(--text-muted);padding:0!important;overflow:auto;background:var(--background-secondary); }
+.desk-view .desk-root { box-sizing:border-box;width:100%;max-width:1380px;margin:0 auto;min-height:100%;position:relative;overflow-x:clip;container-type:inline-size; }
+.desk-toolbar { display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0; }
+.desk-toolbar h1 { margin:0;font-size:23px;font-weight:650;white-space:nowrap; }
+.desk-toolbar-actions { display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end; }
+.desk-toolbar-button { display:inline-flex;align-items:center;justify-content:center;gap:5px;box-shadow:none;height:30px;padding:4px 9px;font-size:12px;background:transparent;color:var(--text-muted);border:1px solid var(--hp-border);border-radius:7px; }
+.desk-toolbar-button:hover { color:var(--text-normal);background:var(--background-modifier-hover); }
+.desk-toolbar-button svg { width:14px;height:14px; }
+.desk-workspace-status { color:var(--text-muted);font-size:11px;min-height:18px;margin-bottom:12px; }
+.desk-grid { display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:36px;gap:16px;align-items:stretch; }
+.desk-root .desk-card { display:flex;position:relative;container-type:size;min-width:0;min-height:0;flex-direction:column;grid-column:span var(--desk-card-width);grid-row:span var(--desk-card-height);background:var(--hp-card-bg);border:1px solid var(--hp-border);box-shadow:var(--hp-shadow);overflow:hidden; }
+.desk-root .hp-card-header { display:flex;align-items:center;gap:8px;flex:none;border-bottom:1px solid var(--hp-border);min-height:0; }
+.desk-root .hp-card-icon { display:flex;align-items:center;justify-content:center;flex:none;background:color-mix(in srgb,var(--hp-accent,#6388c9) 15%,transparent);color:var(--hp-accent,#6388c9); }
+.desk-root .hp-card-icon svg { width:15px;height:15px; }
+.desk-root .hp-card-title { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.desk-root .hp-card-header-right { display:flex;align-items:center;gap:4px;margin-left:auto; }
+.desk-root .hp-card-actions { display:flex;align-items:center;gap:4px; }
+.desk-root .hp-card-action { display:inline-flex;align-items:center;justify-content:center;height:26px;min-height:26px;width:26px;padding:4px;color:var(--text-muted);background:transparent;box-shadow:none;border:0; }
+.desk-root .hp-card-action:hover { background:var(--background-modifier-hover);color:var(--text-normal); }
+.desk-root .hp-card-action svg { width:15px;height:15px; }
+.desk-root .hp-card-body { display:flex;flex:1;flex-direction:column;min-height:0;min-width:0;padding:0;overflow:auto; }
+.desk-card-editbar { display:flex;align-items:center;gap:4px;padding:4px 10px;border-top:1px dashed var(--hp-border);flex:none; }
+.desk-card-editbar button { width:24px;height:24px;padding:4px;background:transparent;box-shadow:none;border:0;color:var(--text-muted); }
+.desk-card-editbar svg { width:14px;height:14px; }
+.desk-card-size { font-size:10px;color:var(--text-muted);margin-right:auto; }
+.desk-card-resize { position:absolute;right:1px;bottom:1px;width:18px;height:18px;padding:2px;border:0;background:transparent;box-shadow:none;cursor:nwse-resize;touch-action:none; }
+.desk-card-resize svg { width:14px;height:14px; }
+.desk-root .desk-card-editbar[hidden],.desk-root .desk-card-resize[hidden],.desk-root .desk-pending[hidden],.desk-empty-workspace[hidden] { display:none; }
+.desk-root.is-editing .desk-card { outline:1px dashed #6388c966; }
+.desk-root.is-editing .hp-card-header { cursor:grab; }
+.desk-root .desk-card.is-drop-target { outline:2px solid #6388c9; }
+.desk-root .desk-card.is-dragging { opacity:.45; }
+.desk-pending { font-size:11px;padding:6px 12px;background:var(--background-secondary);color:var(--text-warning);flex:none; }
+.desk-empty,.desk-empty-workspace { color:var(--text-muted);font-size:12px;line-height:1.7;padding:12px 0; }
+.desk-empty-workspace { text-align:center;padding:48px 20px; }
+.desk-status,.desk-inline-error { font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
+.desk-status:empty,.desk-inline-error:empty { display:none; }
+.desk-inline-error { color:var(--text-error); }
+.desk-note-list { display:flex;flex-direction:column;gap:6px; }
+.desk-root .desk-note-link { display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;width:100%;height:auto;min-height:36px;white-space:normal;padding:8px 10px;background:transparent;color:var(--text-normal);border:0;border-radius:8px;box-shadow:none;font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
+.desk-root .desk-note-link:hover { background:var(--background-modifier-hover); }
+.desk-note-meta { font-size:10px;color:var(--text-muted);font-weight:400; }
+.desk-links { display:grid!important;grid-template-columns:repeat(var(--desk-link-columns),minmax(0,1fr));overflow:auto; }
+.desk-root .desk-links button { width:100%;height:auto;box-shadow:none;color:var(--text-normal); }
+.desk-task-form { display:flex;gap:6px;margin-bottom:10px;flex:none; }
+.desk-task-form input { min-width:0;flex:1; }
+.desk-task-form button { flex:none;background:#6388c914;color:#6388c9;border:1px solid #6388c933;box-shadow:none; }
+.desk-task-board { display:grid;grid-template-columns:repeat(var(--desk-task-columns,3),minmax(145px,1fr));gap:8px;overflow:auto;align-items:start;flex:1;min-height:0; }
+.desk-task-column { background:var(--background-secondary);border:1px solid var(--hp-border);border-top:2px solid #8ca6d1;padding:8px;min-height:80px; }
+.desk-task-column[data-state="doing"] { border-top-color:#d3b276; }.desk-task-column[data-state="done"] { border-top-color:#85b29a; }
+.desk-task-heading { font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:8px; }
+.desk-task-row { background:var(--hp-card-bg);border:1px solid var(--hp-border);border-radius:8px;padding:4px;margin-bottom:6px; }
+.desk-task-row .desk-note-link { padding:4px;min-height:28px; }
+.desk-task-row select { width:100%;height:24px;font-size:10px;padding:2px 4px;background:transparent;box-shadow:none;color:var(--text-muted); }
+.desk-root .desk-task-list,.desk-root .desk-task-editor { display:flex;flex:1;flex-direction:column;min-height:0; }
+.desk-root .desk-task-editor { overflow:auto;gap:8px; }
+.desk-root .desk-task-list[hidden],.desk-root .desk-task-editor[hidden] { display:none; }
+.desk-root .desk-task-details { padding:5px 4px;font-size:12px;overflow-wrap:anywhere; }
+.desk-root .desk-task-details summary { cursor:pointer;color:var(--text-muted);font-size:11px; }
+.desk-root .desk-task-detail-content { padding-top:6px; }
+.desk-root .desk-task-detail-content img,.desk-root .desk-task-detail-content video { display:block;max-width:100%;max-height:220px;object-fit:contain; }
+.desk-root .desk-task-detail-content audio { max-width:100%; }
+.desk-root .ws-capture-attachment video { width:100%;max-width:280px;max-height:130px;border-radius:6px; }
+.desk-root .desk-stats { display:grid;grid-template-columns:repeat(var(--hp-cols,2),minmax(0,1fr));align-content:center;gap:10px;flex:1;min-height:0;padding:14px 18px;overflow:auto; }
+.desk-root .desk-stat { text-align:left;min-width:0;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--hp-tone) 12%,transparent); }.desk-root .desk-stat-number { color:var(--hp-tone);font-size:22px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums; }
+.desk-root .hp-stat-label { margin-top:4px;color:var(--hp-muted);font-size:11px; }
+.desk-modal { max-width:720px;width:min(720px,94vw); }
+.desk-form-field { display:flex;flex-direction:column;gap:5px;font-size:12px;margin:12px 0; }
+.desk-form-field input,.desk-form-field select,.desk-form-field textarea { width:100%;max-width:100%; }
+.desk-form-field textarea { min-height:90px;resize:vertical; }
+.desk-form-field input[type="checkbox"] { width:auto;align-self:flex-start; }
+.desk-modal .modal-content > button { margin:12px 8px 0 0; }
+.desk-link-row { display:flex;align-items:end;gap:8px; }.desk-link-row .desk-form-field { flex:1;min-width:0; }
+.desk-modal-actions { display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap; }
+.desk-import-preview { border:1px solid var(--background-modifier-border);border-radius:8px;padding:10px;margin-top:12px; }
+@media (max-width:620px) {
+ .desk-view .desk-root { padding:12px 10px 24px!important; }
+ .desk-toolbar { align-items:flex-start; }.desk-toolbar h1 { font-size:19px; }
+ .desk-toolbar-button { padding:4px 6px; }
+ .desk-grid { grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;gap:12px; }
+ .desk-root .desk-card { grid-column:1!important;grid-row:auto!important;min-height:150px;max-height:620px; }
+ .desk-root .hp-card-kanban { min-height:300px; }
+ .desk-root .desk-card-resize { display:none; }
+ .desk-root .desk-links { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .desk-link-row { flex-wrap:wrap; }
+}
+.desk-view .desk-root { --hp-radius:18px; --hp-shadow:0 4px 24px #26355006; padding:16px 24px 32px; container-name:workspace; }
+.theme-light .desk-view { background:#f5f6fa; }
+.theme-light .desk-root { --hp-border:#e7ebf2; --hp-card-bg:#fff; --hp-muted:#7c8799; color:#293448; }
+.desk-root .hp-card { border-radius:18px; }
+.desk-root .hp-card-header { padding:12px 16px; border-bottom-color:color-mix(in srgb,var(--hp-border) 60%,transparent); background:transparent; }
+.desk-root .hp-card-title { font-size:14px; font-weight:650; }
+.desk-root .hp-card-icon { width:27px;height:27px;border-radius:9px; }
+/* 插件在窄窗口强制拉高横幅，单独覆盖此规则。 */
+.desk-root .hp-card-hero { grid-row:span 3; }
+.desk-root .hp-card-hero .hp-card-header { display:none; }
+.desk-root.is-editing .hp-card-hero .hp-card-header { display:flex; }
+.desk-root .hp-hero { padding:22px 26px;gap:12px; }
+.theme-light .desk-root .hp-card-hero { background:linear-gradient(115deg,#edf3ff,#f6f2fc); }
+.desk-root .hp-hero { background:transparent; }
+.desk-root .hp-hero-greeting { font-size:26px;letter-spacing:-.6px;font-weight:700; }
+.desk-root .hp-hero-clock { color:#5c72a6;font-size:34px;font-weight:650; }
+.desk-root .hp-hero-name { color:#5c72a6; }
+.desk-root .hp-hero-chips { display:none; }
+.desk-root .hp-hero-meta { font-size:12px; }
+.desk-root .hp-card-workspace-capture .hp-card-body { padding:12px 18px 16px;gap:10px;overflow:auto; }
+.theme-light .desk-root .hp-card-workspace-capture { background:linear-gradient(140deg,#f1f6ff,#fff); }
+.theme-light .desk-root .hp-card-quote { background:linear-gradient(140deg,#f6f2fc,#fff); }
+.desk-root .ws-hint { color:var(--text-muted);font-size:12px;line-height:1.5;margin:0; }
+.desk-root .ws-hint:empty { display:none; }
+.desk-root .ws-capture-editor textarea { box-sizing:border-box;min-height:62px;flex:1;resize:vertical;border-radius:10px;padding:10px 12px;font:inherit;font-size:13px;background:var(--hp-card-bg);border:1px solid var(--hp-border); }
+.desk-root .ws-capture-save { align-self:flex-end;flex:none;width:auto;min-height:32px;padding:6px 16px;border-radius:9px;font-size:12px;background:#6388c9;color:white; }
+.desk-root .ws-capture-footer { display:flex;flex:none;align-items:center;justify-content:flex-end;gap:10px; }
+.desk-root .ws-capture-draft-state { margin-right:auto;font-size:10px; }
+.desk-root .hp-card-workspace-capture .ws-capture-footer button { align-self:center; }
+.desk-root .ws-capture-actions { display:flex;flex:none;align-items:center;gap:6px; }
+.desk-root .ws-capture-actions .ws-capture-action { display:flex;align-items:center;justify-content:center;width:28px;height:30px;min-height:30px;padding:5px;background:transparent;color:var(--text-muted);box-shadow:none;border:1px solid var(--hp-border);border-radius:8px; }
+.desk-root .ws-capture-actions .ws-capture-action:hover { background:var(--background-modifier-hover);color:var(--text-normal); }
+.desk-root .ws-capture-action svg,.desk-root .ws-capture-remove svg { width:15px;height:15px; }
+.desk-root .ws-capture-actions .ws-capture-action.is-recording { background:#d95e5e18;color:#d14f4f;border-color:#d95e5e66; }
+.desk-root .ws-capture-links { display:flex;flex:none;gap:6px;overflow:auto; }
+.desk-root .ws-capture-links a { min-width:0;max-width:100%;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:1.5; }
+.desk-root .ws-capture-attachments { display:flex;flex:none;flex-direction:column;gap:6px;max-height:110px;overflow:auto; }
+.desk-root .ws-capture-links[hidden],.desk-root .ws-capture-attachments[hidden] { display:none; }
+.desk-root .ws-capture-attachment { display:flex;flex:none;align-items:center;gap:8px;min-width:0;padding:6px 8px;border:1px solid var(--hp-border);border-radius:9px;background:var(--hp-card-bg); }
+.desk-root .ws-capture-attachment img { flex:none;width:38px;height:38px;object-fit:cover;border-radius:6px; }
+.desk-root .ws-capture-attachment-content { display:flex;flex:1;flex-direction:column;gap:4px;min-width:0; }
+.desk-root .ws-capture-filename { font-size:11px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.desk-root .ws-capture-attachment audio { width:100%;max-width:280px;height:30px; }
+.desk-root .ws-capture-remove { display:flex;align-self:center;align-items:center;justify-content:center;flex:none;min-height:26px;width:26px;height:26px;padding:4px;border:0;box-shadow:none;background:transparent;color:var(--text-muted); }
+.desk-root .ws-capture-status { flex:none;overflow-wrap:anywhere; }
+.desk-root .hp-card-workspace-capture .hp-card-body.is-dragging-files { outline:2px dashed var(--interactive-accent);outline-offset:-5px; }
+.desk-root .ws-capture-header-action { display:inline-flex;align-self:center;align-items:center;justify-content:center;gap:4px;width:auto;height:30px;min-height:30px;padding:4px 11px;border:1px solid color-mix(in srgb,#6388c9 22%,var(--hp-border));border-radius:6px;background:color-mix(in srgb,#6388c9 10%,var(--hp-card-bg));color:color-mix(in srgb,#6388c9 75%,var(--text-normal));font-size:12px;font-weight:600;box-shadow:none;opacity:1;white-space:nowrap; }
+.desk-root .ws-capture-header-action:hover { background:color-mix(in srgb,#6388c9 17%,var(--hp-card-bg));color:color-mix(in srgb,#6388c9 75%,var(--text-normal)); }
+.desk-root .ws-capture-header-action svg { flex:none;width:13px;height:13px; }
+.desk-root .ws-capture-editor { display:flex;flex:1;flex-direction:column;gap:10px;min-height:0; }
+.desk-root .ws-capture-recent { display:flex;flex:1;flex-direction:column;gap:6px;min-height:0;overflow:auto; }
+/* Obsidian 的按钮默认固定高度；多行记录必须按内容撑开，避免摘要被压成零高度。 */
+.desk-root .hp-card-workspace-capture .ws-capture-recent-row { display:flex;flex:none;flex-direction:column;align-self:stretch;align-items:flex-start;gap:5px;box-sizing:border-box;width:100%;height:auto;min-height:62px;padding:10px 12px;border:1px solid var(--hp-border);border-radius:9px;background:var(--hp-card-bg);color:var(--text-normal);text-align:left;white-space:normal;box-shadow:none; }
+.desk-root .hp-card-workspace-capture .ws-capture-recent-row:hover { background:var(--background-modifier-hover); }
+.desk-root .ws-capture-recent-date { flex:none;font-size:10px;line-height:1.4;color:var(--text-muted); }
+.desk-root .ws-capture-recent-summary { display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;flex:none;width:100%;min-height:1.5em;overflow:hidden;font-size:13px;line-height:1.5;color:var(--text-normal);overflow-wrap:anywhere; }
+.desk-root .ws-capture-recent-media { flex:none;font-size:10px;line-height:1.4;color:var(--text-muted); }
+.desk-root .hp-card-workspace-capture [hidden] { display:none; }
+.desk-root .hp-quote { padding:18px 24px; }
+.desk-root .hp-quote-text { font-family:var(--font-interface);font-size:17px;line-height:1.8;font-weight:500; }
+.desk-root .hp-quicklinks { padding:12px 16px 16px;gap:12px; }
+.desk-root .hp-quicklink { flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;min-height:86px;border-radius:13px;padding:14px;background:color-mix(in srgb,var(--hp-tone) 5%,var(--hp-card-bg));border:1px solid color-mix(in srgb,var(--hp-tone) 10%,var(--hp-border)); }
+.desk-root .hp-quicklink-icon { width:32px;height:32px;border-radius:10px;background:color-mix(in srgb,var(--hp-tone) 12%,var(--hp-card-bg));color:var(--hp-tone); }
+.desk-root .hp-quicklink-label { font-size:13px;font-weight:600;white-space:normal;overflow:visible;line-height:1.5;overflow-wrap:anywhere; }
+.desk-root .hp-kanban { padding:12px;gap:10px; }
+.desk-root .hp-kanban-column { border-top-width:2px;border-radius:11px; }
+.desk-root .hp-list-row { padding:12px 14px; }
+.desk-root .hp-card-workspace-calendar .hp-card-body { overflow:auto; }
+.desk-root .ws-almanac-inner { padding:12px 16px 14px; }
+.desk-root .ws-calendar-bar { display:flex;justify-content:space-between;align-items:center;gap:6px; }
+.desk-root .ws-calendar-bar button { height:30px;width:30px;padding:0;box-shadow:none;border-radius:8px;font-size:21px; }
+.desk-root .ws-calendar-pickers { display:flex;align-items:center;gap:5px;font-size:13px; }
+.desk-root .ws-calendar-pickers input { width:68px;min-width:0;text-align:center;padding:4px;border:0;background:var(--background-secondary);box-shadow:none;font-size:14px; }
+.desk-root .ws-calendar-pickers select { width:65px;min-width:0;font-size:13px;box-shadow:none; }
+.desk-root .ws-calendar-summary { color:#62897b;font-size:11px;line-height:1.6;min-height:18px;margin:8px 0; }
+.desk-root .ws-calendar-grid { display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px; }
+.desk-root .ws-weekday { text-align:center;font-size:11px;color:var(--text-muted);padding:5px 0; }
+.desk-root .ws-day { display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;min-width:0;width:100%;height:43px;gap:2px;padding:2px 0;border:1px solid transparent;box-shadow:none;border-radius:9px;background:transparent;font-size:13px; }
+.desk-root .ws-day small { max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;color:var(--text-muted); }
+.desk-root .ws-day.is-weekend { color:#a67970; }
+.desk-root .ws-day.is-term small { color:#48896c; }
+.desk-root .ws-day.is-festival small { color:#b67a51; }
+.desk-root .ws-day.is-today { border-color:#9ab5df; }
+.desk-root .ws-day.is-selected { background:#e8effb;color:#3a66a5; }
+.desk-root .ws-day:hover { background:var(--background-modifier-hover); }
+.desk-root .ws-calendar-detail { border-top:1px solid var(--hp-border);margin-top:10px;padding-top:10px;line-height:1.7; }
+.desk-root .ws-calendar-selected-date { font-size:12px;font-weight:600; }
+.desk-root .ws-calendar-lunar-detail { font-size:12px; }
+.desk-root .ws-calendar-meta { font-size:10px;color:var(--text-muted); }
+.desk-root .ws-calendar-festival { font-size:11px;color:#5e8b7e; }
+.desk-root .ws-calendar-footer { display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;margin-top:10px; }
+.desk-root .ws-calendar-footer button { font-size:11px;height:30px;padding:4px 9px;border-radius:8px; }
+.desk-root .ws-calendar-status { font-size:10px;color:var(--text-muted);line-height:1.5;margin-top:5px;overflow-wrap:anywhere; }
+@media(max-width:650px){.desk-view .desk-root{padding:12px 10px 24px;}}
+
+/* 完整月历使用 Obsidian 原生弹层管理焦点和关闭。 */
+.desk-root .hp-card-workspace-calendar .hp-card-header { display:none; }
+.desk-root.is-editing .hp-card-workspace-calendar .hp-card-header { display:flex; }
+.desk-root .hp-card-workspace-calendar .hp-card-body { align-items:center;justify-content:center;padding:10px;overflow:auto; }
+.desk-root .ws-desk-calendar { position:relative;display:flex;flex:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:168px;max-width:100%;height:auto;min-height:164px;padding:0 0 12px;border:1px solid var(--hp-border);border-radius:13px;background:var(--hp-card-bg);color:var(--text-normal);box-shadow:0 5px 0 -2px var(--background-secondary),0 9px 16px #2635500c;cursor:pointer;white-space:normal; }
+.desk-root .ws-desk-calendar::before,.desk-root .ws-desk-calendar::after { content:'';position:absolute;top:-5px;width:5px;height:13px;border-radius:3px;background:var(--text-muted); }
+.desk-root .ws-desk-calendar::before { left:28px; }
+.desk-root .ws-desk-calendar::after { right:28px; }
+.desk-root .ws-desk-calendar:hover { border-color:#7cae9d;box-shadow:0 5px 0 -2px var(--background-secondary),0 9px 20px #5e8b7e20; }
+.desk-root .ws-desk-calendar:focus-visible { outline:2px solid var(--interactive-accent);outline-offset:4px; }
+.desk-root .ws-desk-month { align-self:stretch;padding:9px 10px 7px;border-radius:12px 12px 0 0;background:#5e8b7e;color:#fff;font-size:12px;letter-spacing:1px; }
+.desk-root .ws-desk-day { font-size:58px;line-height:1.05;font-weight:650;font-variant-numeric:tabular-nums;margin-top:4px; }
+.desk-root .ws-desk-week { font-size:12px; }
+.desk-root .ws-desk-lunar { max-width:100%;box-sizing:border-box;padding:0 8px;font-size:10px;line-height:1.5;color:var(--text-muted); }
+.desk-calendar-overlay.modal-container { align-items:stretch;justify-content:flex-end; }
+.desk-calendar-overlay .modal-bg { background:rgba(20,30,45,.24); }
+.modal.ws-calendar-drawer { --hp-border:var(--background-modifier-border);--hp-card-bg:var(--background-primary);box-sizing:border-box;width:min(400px,100vw);min-width:0;max-width:100vw;height:100%;min-height:0;max-height:100%;margin:0;padding:24px 18px;border-radius:18px 0 0 18px;box-shadow:-12px 0 40px #1721351a;animation:ws-calendar-slide-in .22s ease-out; }
+.ws-calendar-drawer .modal-title { font-size:17px;padding-right:26px; }
+.ws-calendar-drawer .modal-content { overflow:auto;overscroll-behavior:contain; }
+.ws-calendar-drawer .ws-almanac-inner { padding:12px 0 20px; }
+.ws-calendar-drawer .ws-day { height:48px; }
+.ws-calendar-drawer .ws-calendar-footer button { min-height:36px; }
+.theme-dark .ws-calendar-drawer .ws-day.is-selected { background:#2b3f57;color:#c4daf7; }
+@keyframes ws-calendar-slide-in { from { transform:translateX(100%); } to { transform:translateX(0); } }
+@media(prefers-reduced-motion:reduce){.modal.ws-calendar-drawer{animation:none;}}
+@media(max-width:450px){.modal.ws-calendar-drawer{padding:20px 14px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom));}.ws-calendar-drawer .ws-calendar-footer button{min-height:40px;}}
+
+/* 顶部欢迎区合并台历与今日一句，统计移至灵感右侧。 */
+.desk-root .hp-card-workspace-welcome .hp-card-header { display:none; }
+.desk-root.is-editing .hp-card-workspace-welcome .hp-card-header { display:flex; }
+.theme-light .desk-root .hp-card-workspace-welcome { background:linear-gradient(115deg,#edf3ff,#f6f2fc); }
+.theme-dark .desk-root .hp-card-workspace-welcome { background:linear-gradient(115deg,#1b2335,#242033); }
+.desk-root .ws-welcome { box-sizing:border-box;justify-content:center;gap:12px;padding:18px 24px;overflow:auto; }
+.desk-root .ws-welcome-top { display:flex;align-items:center;justify-content:space-between;gap:16px; }
+.desk-root .ws-welcome-left { min-width:0; }
+.desk-root .ws-welcome-eyebrow { font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:6px; }
+.desk-root .ws-welcome-greeting { font-size:26px;line-height:1.4;font-weight:650;overflow-wrap:anywhere; }
+.desk-root .ws-welcome-meta { font-size:12px;color:var(--text-muted);margin-top:6px; }
+.desk-root .ws-welcome-right { display:flex;flex:none;align-items:center;gap:14px;margin-left:auto; }
+.desk-root .ws-welcome-clockbox { flex:none;text-align:right; }
+.desk-root .ws-welcome-clockbox:empty { display:none; }
+.desk-root .ws-welcome-clock { font-size:32px;font-weight:650;font-variant-numeric:tabular-nums;color:#6c8dc5;line-height:1.2; }
+.desk-root .ws-welcome-calendar { flex:none; }
+.desk-root .ws-welcome-calendar .ws-desk-calendar { box-sizing:border-box;width:72px;min-height:76px;padding-bottom:6px;gap:1px;border-radius:8px;box-shadow:0 2px 0 -1px var(--background-secondary); }
+.desk-root .ws-welcome-calendar .ws-desk-calendar::before,.desk-root .ws-welcome-calendar .ws-desk-calendar::after { top:-3px;width:3px;height:8px; }
+.desk-root .ws-welcome-calendar .ws-desk-calendar::before { left:16px; }
+.desk-root .ws-welcome-calendar .ws-desk-calendar::after { right:16px; }
+.desk-root .ws-welcome-calendar .ws-desk-calendar:hover { box-shadow:0 2px 0 -1px var(--background-secondary),0 3px 8px #5e8b7e15; }
+.desk-root .ws-welcome-calendar .ws-desk-month { padding:4px;font-size:9px;line-height:1.2;letter-spacing:0;border-radius:7px 7px 0 0; }
+.desk-root .ws-welcome-calendar .ws-desk-day { font-size:28px;margin-top:1px; }
+.desk-root .ws-welcome-calendar .ws-desk-week { font-size:9px;line-height:1.3; }
+.desk-root .ws-welcome-calendar .ws-desk-lunar { display:none; }
+.desk-root .ws-calendar-error { font-size:11px;color:var(--text-muted); }
+.desk-root .ws-welcome-quote { border-top:1px solid var(--hp-border);padding-top:12px;display:flex;align-items:baseline;gap:12px;line-height:1.7; }
+.desk-root .ws-welcome-quote-label { flex:none;font-size:11px;color:var(--text-muted); }
+.desk-root .ws-welcome-quote-text { font-size:13px;overflow-wrap:anywhere; }
+.desk-root .hp-card-stats .hp-stats { grid-template-columns:repeat(2,minmax(0,1fr));padding:14px 18px;gap:10px; }
+.desk-root .hp-card-stats .hp-stat { min-width:0;padding:12px 14px; }
+/* 窄屏采用自然高度，避免桌面固定网格裁切语录、捕获框及日历。编辑时仍保留网格控制。 */
+@container workspace (max-width:620px){
+ .desk-root:not(.is-editing):not(.is-resizing) .hp-grid { display:flex;flex-direction:column;gap:14px; }
+ .desk-root:not(.is-editing):not(.is-resizing) .hp-card { container-type:inline-size;width:100%;height:auto;min-height:0;flex:none;box-sizing:border-box; }
+ .desk-root:not(.is-editing):not(.is-resizing) .hp-card-body { flex:none;overflow:visible; }
+ .desk-root .ws-welcome { padding:18px;gap:12px; }
+ .desk-root .ws-welcome-top { flex-wrap:wrap; }
+ .desk-root .ws-welcome-right { width:100%;justify-content:space-between;gap:12px; }
+ .desk-root .ws-welcome-greeting { font-size:22px; }
+ .desk-root .ws-welcome-clock { font-size:26px; }
+ .desk-root .ws-welcome-quote { flex-direction:column;gap:3px; }
+ .desk-root .hp-card-workspace-capture .hp-card-body { min-height:190px;box-sizing:border-box; }
+ .desk-root .ws-capture-editor textarea { font-size:16px;min-height:76px; }
+ .desk-root .hp-card-workspace-capture button,.desk-root .ws-calendar-footer button { min-height:40px; }
+ .desk-root .ws-capture-actions .ws-capture-action { width:32px;height:40px;min-height:40px; }
+ .desk-root .hp-kanban { display:grid;grid-template-columns:1fr;overflow:visible; }
+ .desk-root .hp-kanban-column { min-width:0;min-height:130px;flex:none; }
+ .desk-root .hp-kanban-list { max-height:300px; }
+ .desk-root .hp-card-subtitle { max-width:100px; }
+}
+
+/* 布局由本插件控制，避免旧容器网格规则覆盖卡片宽度。 */
+.desk-view .desk-root .desk-grid { grid-template-columns:repeat(12,minmax(0,1fr)); }
+@container workspace (max-width:620px) {
+ .desk-root .desk-grid { display:flex;flex-direction:column;gap:14px; }
+ .desk-root .desk-card { width:100%;flex:none;box-sizing:border-box;max-height:none; }
+ .desk-root .desk-card-resize { display:none; }
+}
+@media(max-width:620px) {
+ .desk-view .desk-root .desk-grid { grid-template-columns:minmax(0,1fr); }
+}
+
+/* 独立提供旧工作台依赖的基础排版，覆盖样式不再依赖 Home Pages。 */
+.desk-root .desk-toolbar[hidden],.desk-root .hp-card-action[hidden],.desk-workspace-status:empty { display:none; }
+.desk-root .hp-tone-0 { --hp-tone:#2563eb; }
+.desk-root .hp-tone-1 { --hp-tone:#0d9488; }
+.desk-root .hp-tone-2 { --hp-tone:#d97706; }
+.desk-root .hp-tone-3 { --hp-tone:#db2777; }
+.desk-root .hp-quicklinks { flex:1;align-content:start;min-height:0; }
+.desk-root .hp-quicklink { display:flex;min-width:0;font-size:13px;transition:background .12s ease,transform .12s ease; }
+.desk-root .hp-quicklink.is-clickable:hover { background:color-mix(in srgb,var(--hp-tone) 14%,var(--hp-card-bg));transform:translateY(-1px); }
+.desk-root .hp-quicklink-icon { display:inline-flex;align-items:center;justify-content:center;flex:none; }
+.desk-root .hp-quicklink-icon svg { width:18px;height:18px; }
+.desk-root .desk-note-list { flex:1;min-height:0;padding:6px 10px;gap:0;overflow:auto; }
+.desk-root .desk-note-list .hp-list-row { flex-direction:row;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid color-mix(in srgb,var(--hp-border) 70%,transparent);font-size:13px; }
+.desk-root .desk-note-list .hp-list-row:last-child { border-bottom:0; }
+.desk-root .hp-list-icon { display:inline-flex;align-items:center;justify-content:center;flex:none;width:26px;height:26px;border-radius:7px;color:var(--hp-accent);background:color-mix(in srgb,var(--hp-accent) 13%,transparent); }
+.desk-root .hp-list-icon svg { width:15px;height:15px; }
+.desk-root .hp-list-text { flex:1;min-width:0; }
+.desk-root .hp-list-title { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.desk-root .hp-list-meta { flex:none;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-variant-numeric:tabular-nums; }
+.desk-root .desk-task-form { margin:12px 12px 0; }
+.desk-root .desk-task-editor { padding:12px 18px 16px; }
+.desk-root .desk-task-editor .ws-capture-save { min-height:32px;padding:6px 16px;border-radius:9px;font-size:12px;background:#6388c9;color:white; }
+@container workspace (min-width:621px) and (max-width:960px) {
+ .desk-root .desk-card { grid-column:span 6; }
+ .desk-root .hp-card-workspace-welcome,.desk-root .hp-card-quicklinks,.desk-root .hp-card-kanban { grid-column:1 / -1; }
+}
+
+.desk-root .ws-capture-recent[hidden],.desk-root .ws-capture-editor[hidden] { display:none; }

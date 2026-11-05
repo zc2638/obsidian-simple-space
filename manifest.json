@@ -1,0 +1,9 @@
+{
+  "id": "simple-space",
+  "name": "Simple Space",
+  "version": "0.1.0",
+  "minAppVersion": "1.8.7",
+  "description": "一个清晰、好看、顺手的 Obsidian 工作台。",
+  "author": "zc",
+  "isDesktopOnly": false
+}
