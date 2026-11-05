@@ -1,5 +1,6 @@
 /* Simple Space：保留原有卡片风格，选择器限定在本插件视图和抽屉中。 */
-.desk-view { --hp-border:var(--background-modifier-border);--hp-card-bg:var(--background-primary);--hp-muted:var(--text-muted);padding:0!important;overflow:auto;background:var(--background-secondary); }
+.desk-view.hp-view { --hp-border:var(--background-modifier-border);--hp-card-bg:var(--background-primary);--hp-muted:var(--text-muted);padding:0;overflow:auto;background:var(--background-secondary); }
+.workspace-leaf-content[data-type="simple-space-workspace"] .view-content.desk-view { padding:0; }
 .desk-view .desk-root { box-sizing:border-box;width:100%;max-width:1380px;margin:0 auto;min-height:100%;position:relative;overflow-x:clip;container-type:inline-size; }
 .desk-toolbar { display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0; }
 .desk-toolbar h1 { margin:0;font-size:23px;font-weight:650;white-space:nowrap; }
@@ -41,7 +42,7 @@
 .desk-root .desk-note-link { display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;width:100%;height:auto;min-height:36px;white-space:normal;padding:8px 10px;background:transparent;color:var(--text-normal);border:0;border-radius:8px;box-shadow:none;font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
 .desk-root .desk-note-link:hover { background:var(--background-modifier-hover); }
 .desk-note-meta { font-size:10px;color:var(--text-muted);font-weight:400; }
-.desk-links { display:grid!important;grid-template-columns:repeat(var(--desk-link-columns),minmax(0,1fr));overflow:auto; }
+.desk-root .desk-links { display:grid;grid-template-columns:repeat(var(--desk-link-columns),minmax(0,1fr));overflow:auto; }
 .desk-root .desk-links button { width:100%;height:auto;box-shadow:none;color:var(--text-normal); }
 .desk-task-form { display:flex;gap:6px;margin-bottom:10px;flex:none; }
 .desk-task-form input { min-width:0;flex:1; }
@@ -75,11 +76,11 @@
 .desk-modal-actions { display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap; }
 .desk-import-preview { border:1px solid var(--background-modifier-border);border-radius:8px;padding:10px;margin-top:12px; }
 @media (max-width:620px) {
- .desk-view .desk-root { padding:12px 10px 24px!important; }
+ .desk-view .hp-root.desk-root { padding:12px 10px 24px; }
  .desk-toolbar { align-items:flex-start; }.desk-toolbar h1 { font-size:19px; }
  .desk-toolbar-button { padding:4px 6px; }
  .desk-grid { grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;gap:12px; }
- .desk-root .desk-card { grid-column:1!important;grid-row:auto!important;min-height:150px;max-height:620px; }
+ .desk-view .desk-root .desk-card { grid-column:1;grid-row:auto;min-height:150px;max-height:620px; }
  .desk-root .hp-card-kanban { min-height:300px; }
  .desk-root .desk-card-resize { display:none; }
  .desk-root .desk-links { grid-template-columns:repeat(2,minmax(0,1fr)); }

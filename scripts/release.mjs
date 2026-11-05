@@ -18,6 +18,7 @@ try{
  requireValue(args.every(arg=>['--check','--draft'].includes(arg)),'用法：node scripts/release.mjs [--check] [--draft]');
  const manifest=json('manifest.json'),pkg=json('package.json'),lock=json('package-lock.json'),versions=json('versions.json');
  const {id,name,version,minAppVersion}=manifest;
+ requireValue(typeof manifest.description==='string'&&manifest.description.length<=250&&!/obsidian/i.test(manifest.description)&&/[.!?]$/.test(manifest.description),'插件描述需简明、不含 Obsidian，且以英文标点 .、! 或 ? 结尾（最多250字符）。');
  requireValue(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id),'manifest.json 中的插件 ID 无效。');
  requireValue(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version),'manifest.json 的版本必须为 x.y.z，不带 v 前缀。');
  requireValue(pkg.version===version,'package.json 与 manifest.json 版本不一致。');
@@ -41,7 +42,6 @@ try{
   throw new Error(`GitHub 登录检查失败（退出码 ${error.status??'未知'}），请执行 gh auth status --hostname github.com 查看具体原因。`);
  }
  const assets=['main.js','manifest.json','styles.css'].map(file=>path.resolve('dist',id,file));
- assets.push(path.resolve('dist',`${id}-${version}.zip`));
  console.log(`目标：${repository}\n版本／标签：${version}\n提交：${commit}\n模式：${args.includes('--draft')?'Release 草稿':'正式 Release'}\n附件：\n${assets.map(file=>'  '+file).join('\n')}`);
  if(args.includes('--check'))console.log('预检通过；未运行构建、未推送标签、未创建 Release。');
  else{

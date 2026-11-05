@@ -1,9 +1,9 @@
 {
   "name": "simple-space",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
-  "description": "一个清晰、好看、顺手的 Obsidian 工作台。",
+  "description": "Create a customizable workspace with quick capture, tasks, shortcuts, recent notes, and statistics.",
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs --watch",

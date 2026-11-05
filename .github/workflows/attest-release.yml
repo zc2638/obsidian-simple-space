@@ -1,0 +1,75 @@
+name: Attest release assets
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: attest-${{ github.event.release.tag_name || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
+      RELEASE_DIR: ${{ runner.temp }}/simple-space-release
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Validate release tag
+        run: |
+          node -e 'if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(process.env.RELEASE_TAG)) throw new Error("版本标签必须为 x.y.z");'
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: npm
+
+      - name: Validate manifest version
+        run: |
+          node -e 'const fs=require("node:fs"); const m=JSON.parse(fs.readFileSync("manifest.json","utf8")); if (m.version!==process.env.RELEASE_TAG) throw new Error("manifest 版本与标签不一致");'
+
+      - name: Install, test, and build from tagged source
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Download published assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download "$RELEASE_TAG" --repo "$GH_REPO" --dir "$RELEASE_DIR" --pattern main.js --pattern manifest.json --pattern styles.css
+
+      - name: Verify published assets match the source build
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import path from 'node:path';
+          for (const name of ['main.js','manifest.json','styles.css']) {
+            if (!readFileSync(name).equals(readFileSync(path.join(process.env.RELEASE_DIR,name)))) {
+              throw new Error(`发布附件与标签源码构建不一致：${name}`);
+            }
+          }
+          console.log('三个发布附件均与源码构建一致。');
+          NODE
+
+      - name: Generate build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
